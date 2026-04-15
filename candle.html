@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <link rel="stylesheet" href="theme.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ลากเทียนไปปักเค้ก 🎂🕯️</title>
+
+  <style>
+    :root{
+      --line:#ffffff80;
+      --muted:#2f2f2fcc;
+      --flame1:#ffd36e;
+      --flame2:#ff7ad1;
+    }
+    *{box-sizing:border-box}
+
+    /* ✅ ใช้พาสเทลจาก theme.css (ไม่ตั้งพื้นหลังมืดทับ) */
+    body{
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .card{
+      width:min(1100px,96vw);
+    }
+
+    /* ถ้าคุณใช้โครงสร้าง theme.css แบบ panel */
+    .panel{
+      padding:22px;
+    }
+
+    h1{margin:0}
+    .sub{color:var(--muted); margin:6px 0 10px}
+
+    .stage{
+      position:relative;
+      width:100%;
+      aspect-ratio:16/9;
+      border-radius:18px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.75);
+      background: linear-gradient(135deg,#9be7c4,#d7bdf0);
+      touch-action:none;
+    }
+
+    /* เค้กแบบ contain */
+    .stage img.cake{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit:contain;
+      pointer-events:none;
+      user-select:none;
+    }
+
+    /* layer ทับกรอบรูปเค้กจริง */
+    #cakeBox{
+      position:absolute;
+      left:0; top:0;
+      width:100%; height:100%;
+      pointer-events:none;
+      z-index:5;
+    }
+
+    /* จุดปัก (debug) */
+    .spot{
+      position:absolute;
+      width:8%;
+      aspect-ratio:1/3;
+      transform:translate(-50%,-100%);
+      z-index:6;
+      pointer-events:auto;
+      border-radius:12px;
+      outline: 2px dashed #ffffff55;
+      background:#00000010;
+    }
+    .spot.filled{
+      pointer-events:none;
+      outline:none;
+      background:transparent;
+    }
+
+    /* เทียนที่ปักแล้ว */
+    .candle-fixed{
+      position:absolute;
+      left:50%;
+      top:74%;
+      width:100%;
+      transform:translate(-50%,-100%);
+      pointer-events:none;
+      user-select:none;
+      z-index:7;
+    }
+
+    /* เปลวไฟ */
+    .flame{
+      position:absolute;
+      left:50%;
+      top:6%;
+      width:30%;
+      height:30%;
+      transform:translate(-50%,-120%);
+      filter:drop-shadow(0 6px 10px rgba(0,0,0,.35));
+      z-index:8;
+      pointer-events:none;
+    }
+    .flame::before{
+      content:"";
+      position:absolute; inset:0;
+      border-radius:50% 50% 60% 60%;
+      background:radial-gradient(circle at 40% 30%,
+        #fff 0%,
+        var(--flame1) 40%,
+        var(--flame2) 75%,
+        transparent 80%
+      );
+      animation:flicker .18s infinite alternate;
+    }
+    .flame::after{
+      content:"";
+      position:absolute; inset:-60%;
+      border-radius:50%;
+      background:radial-gradient(circle, #ffd36e55 0%, transparent 70%);
+      animation:glow .9s infinite;
+    }
+    @keyframes flicker{
+      from{transform:scale(.9) rotate(-5deg)}
+      to{transform:scale(1.1) rotate(6deg)}
+    }
+    @keyframes glow{
+      0%{opacity:.6}
+      50%{opacity:1}
+      100%{opacity:.7}
+    }
+
+    #tray{
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      align-items:flex-end;
+      flex-wrap:wrap;
+    }
+    .drag-candle{
+      width:60px;
+      touch-action:none;
+      user-select:none;
+      cursor:grab;
+      background:transparent;
+    }
+    .count{margin-top:8px; color:var(--muted)}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <div class="header">
+        <div>
+          <h1 class="title">ลากเทียนไปปักเค้ก 🎂🕯️</h1>
+          <div class="subtitle">ลากเทียนไปวางบนหน้าเค้กให้ครบ 5 เล่ม (ปักครบแล้วไปหน้าจดหมายทันที)</div>
+        </div>
+        <div class="badges">
+          <div class="badge">💚</div><div class="badge">💜</div>
+        </div>
+      </div>
+
+      <div class="stage" id="stage">
+        <img class="cake" id="cake" src="assets/cake.png" alt="cake">
+        <div id="cakeBox"></div>
+      </div>
+
+      <div id="tray">
+        <img src="assets/candle.png" class="drag-candle" draggable="false" alt="candle">
+        <img src="assets/candle.png" class="drag-candle" draggable="false" alt="candle">
+        <img src="assets/candle.png" class="drag-candle" draggable="false" alt="candle">
+        <img src="assets/candle.png" class="drag-candle" draggable="false" alt="candle">
+        <img src="assets/candle.png" class="drag-candle" draggable="false" alt="candle">
+      </div>
+
+      <div class="count">ปักแล้ว: <b id="count">0</b> / 5</div>
+    </div>
+  </div>
+
+<script>
+const stage = document.getElementById("stage");
+const cake  = document.getElementById("cake");
+const cakeBox = document.getElementById("cakeBox");
+const tray  = document.getElementById("tray");
+const countEl = document.getElementById("count");
+let count = 0;
+
+// จุดปัก 5 จุด (พิกัดบน "รูปเค้กจริง" เป็น % ของกรอบรูปที่แสดงจริง)
+const SPOTS = [
+  {x: 36, y: 46},
+  {x: 44, y: 44},
+  {x: 52, y: 45},
+  {x: 60, y: 48},
+  {x: 48, y: 50},
+];
+
+let spotEls = [];
+
+function getContainRect(){
+  const s = stage.getBoundingClientRect();
+  const imgW = cake.naturalWidth || 1;
+  const imgH = cake.naturalHeight || 1;
+  const stageRatio = s.width / s.height;
+  const imgRatio   = imgW / imgH;
+
+  let w, h, left, top;
+  if(imgRatio > stageRatio){
+    w = s.width;
+    h = w / imgRatio;
+    left = 0;
+    top = (s.height - h) / 2;
+  }else{
+    h = s.height;
+    w = h * imgRatio;
+    top = 0;
+    left = (s.width - w) / 2;
+  }
+  return {left: s.left + left, top: s.top + top, width: w, height: h};
+}
+
+function renderSpots(){
+  cakeBox.innerHTML = "";
+  spotEls = [];
+  const r = getContainRect();
+  const s = stage.getBoundingClientRect();
+  const boxLeft = r.left - s.left;
+  const boxTop  = r.top  - s.top;
+
+  cakeBox.style.left = boxLeft + "px";
+  cakeBox.style.top  = boxTop  + "px";
+  cakeBox.style.width  = r.width + "px";
+  cakeBox.style.height = r.height + "px";
+
+  SPOTS.forEach((p, i)=>{
+    const d = document.createElement("div");
+    d.className = "spot";
+    d.dataset.i = String(i);
+    d.style.left = p.x + "%";
+    d.style.top  = p.y + "%";
+    cakeBox.appendChild(d);
+    spotEls.push(d);
+  });
+}
+
+function placeOnSpot(candle, spot){
+  spot.classList.add("filled");
+  spot.appendChild(candle);
+
+  candle.className = "candle-fixed";
+  candle.style.position = "absolute";
+  candle.style.left = "50%";
+  candle.style.top  = "74%";
+  candle.style.transform = "translate(-50%,-100%)";
+  candle.style.zIndex = "7";
+
+  const flame = document.createElement("div");
+  flame.className = "flame";
+  spot.appendChild(flame);
+
+  count++;
+  countEl.textContent = count;
+
+  if(count === 5){
+    setTimeout(()=>location.href="letter_bday.html", 800);
+  }
+}
+
+function resetToTray(candle){
+  tray.appendChild(candle);
+  candle.className = "drag-candle";
+  candle.style.position = "";
+  candle.style.left = "";
+  candle.style.top = "";
+  candle.style.transform = "";
+  candle.style.zIndex = "";
+  candle.style.width = "";
+  candle.style.height = "";
+}
+
+function wireDrag(candle){
+  candle.draggable = false;
+
+  let ghost = null;          // ตัวที่วิ่งตาม cursor
+  let dragging = false;
+
+  // ปรับจุดจับ: 0.5 = กึ่งกลางแนวนอน, 0.92 = ใกล้ฐานเทียน
+  const ANCHOR_X = 0.5;
+  const ANCHOR_Y = 0.92;     // ถ้ายังไม่ตรง ปรับเป็น 0.88 / 0.95 ได้เลย
+
+  function cleanup(){
+    dragging = false;
+    if(ghost){
+      ghost.remove();
+      ghost = null;
+    }
+    candle.style.visibility = ""; // เอาตัวจริงกลับมา
+  }
+
+  candle.addEventListener("pointerdown", (e)=>{
+    e.preventDefault();
+
+    dragging = true;
+
+    // สร้าง ghost
+    const r = candle.getBoundingClientRect();
+    ghost = candle.cloneNode(true);
+    ghost.className = "drag-candle";
+    ghost.style.position = "fixed";
+    ghost.style.left = "0px";
+    ghost.style.top = "0px";
+    ghost.style.width = r.width + "px";
+    ghost.style.height = r.height + "px";
+    ghost.style.zIndex = "9999";
+    ghost.style.pointerEvents = "none"; // สำคัญ: กันบัง spot
+    ghost.style.opacity = "0.98";
+    document.body.appendChild(ghost);
+
+    // ซ่อนตัวจริงตอนลาก (กัน layout flex เพี้ยน)
+    candle.style.visibility = "hidden";
+
+    candle.setPointerCapture(e.pointerId);
+
+    // วาง ghost ให้ตรง cursor ทันที
+    const ax = r.width * ANCHOR_X;
+    const ay = r.height * ANCHOR_Y;
+    ghost.style.left = (e.clientX - ax) + "px";
+    ghost.style.top  = (e.clientY - ay) + "px";
+  });
+
+  candle.addEventListener("pointermove", (e)=>{
+    if(!dragging || !ghost) return;
+
+    const r = ghost.getBoundingClientRect();
+    const ax = r.width * ANCHOR_X;
+    const ay = r.height * ANCHOR_Y;
+
+    ghost.style.left = (e.clientX - ax) + "px";
+    ghost.style.top  = (e.clientY - ay) + "px";
+  });
+
+  candle.addEventListener("pointerup", (e)=>{
+    if(candle.hasPointerCapture(e.pointerId)) candle.releasePointerCapture(e.pointerId);
+
+    if(!dragging){
+      cleanup();
+      return;
+    }
+
+    // หา spot ใต้จุดปล่อย
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const spot = el ? el.closest(".spot") : null;
+
+    if(spot && !spot.classList.contains("filled")){
+      // เอาตัวจริงไปปัก แล้วลบ ghost
+      cleanup();
+      placeOnSpot(candle, spot);
+    }else{
+      cleanup();
+      resetToTray(candle);
+    }
+  });
+
+  candle.addEventListener("pointercancel", ()=>{
+    cleanup();
+    resetToTray(candle);
+  });
+}
+
+// init
+cake.addEventListener("load", renderSpots);
+window.addEventListener("resize", ()=>{ if(cake.naturalWidth) renderSpots(); });
+document.querySelectorAll(".drag-candle").forEach(wireDrag);
+</script>
+</body>
+</html>

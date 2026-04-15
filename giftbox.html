@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <link rel="stylesheet" href="theme.css">
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ของขวัญสุดท้าย 🎁</title>
+  <style>
+    
+    .wrap{max-width:980px;margin:0 auto;padding:34px 18px 24px}
+    .card{
+      border:1px solid var(--line); background:var(--card);
+      border-radius:22px; padding:16px;
+      backdrop-filter: blur(12px);
+      box-shadow:0 18px 60px #00000033;
+      max-width:900px;
+      margin:0 auto;
+      text-align:center;
+    }
+    h1{margin:0;font-size:clamp(28px,4.2vw,44px)}
+    .sub{color:var(--muted);line-height:1.7;margin:8px 0 0}
+    .boximg{
+      margin:14px auto 0;
+      width:min(420px, 88vw);
+      aspect-ratio: 1/1;
+      border-radius:22px;
+      border:1px solid var(--line);
+      background:#ffffff10;
+      overflow:hidden;
+      cursor:pointer;
+      position:relative;
+      user-select:none;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .boximg img{width:100%;height:100%;object-fit:cover;display:block}
+    .msg{
+      margin-top:14px;
+      font-size:18px;
+      line-height:1.8;
+      color:#080000;
+      display:none;
+    }
+    .msg.show{display:block;}
+    .tiny{margin-top:10px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>กดที่กล่องของขวัญ 🎁</h1>
+      <p class="sub">กดตรงรูปกล่อง เพื่อเปิดของขวัญ</p>
+
+      <div class="boximg" id="box">
+        <img id="img" src="assets/gift_closed.png" alt="gift box"
+             onerror="this.style.display='none'">
+      </div>
+
+      <div class="msg" id="msg">เย้ ถึงของขวัญอันสุดท้ายแล้ว กลับมาเอาของขวัญที่บ้านน้าาา 🥳💚💜</div>
+      
+    </div>
+  </div>
+
+  <script>
+    const box = document.getElementById("box");
+    const img = document.getElementById("img");
+    const msg = document.getElementById("msg");
+    let opened = false;
+
+    box.addEventListener("click", ()=>{
+      if(opened) return;
+      opened = true;
+      img.src = "assets/gift_open.png";
+      msg.classList.add("show");
+    });
+  </script>
+</body>
+</html>

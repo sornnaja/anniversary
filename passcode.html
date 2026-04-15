@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>กรอกรหัสผ่าน 💗</title>
+  <style>
+    :root{
+      --bg1:#ffe9f2;
+      --bg2:#e8f3ff;
+      --card:#ff5c8a;
+      --card2:#ff77a7;
+      --text:#fff;
+      --shadow: 0 18px 40px rgba(0,0,0,.18);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh;
+      font-family: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+      display:grid; place-items:center;
+      background:
+        radial-gradient(900px 600px at 20% 15%, #ffffffcc 0%, transparent 55%),
+        radial-gradient(900px 600px at 80% 10%, #ffffffcc 0%, transparent 55%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .wrap{
+      width:min(520px, 92vw);
+      padding:22px 16px 28px;
+      display:flex;
+      justify-content:center;
+    }
+
+    .panel{
+      width:100%;
+      background: linear-gradient(180deg, var(--card2), var(--card));
+      color:var(--text);
+      border-radius:22px;
+      padding:18px 16px 16px;
+      box-shadow: var(--shadow);
+      position:relative;
+    }
+
+    h1{
+      margin:0;
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:.2px;
+      text-align:center;
+    }
+    .sub{
+      margin:6px 0 14px;
+      text-align:center;
+      opacity:.92;
+      font-size:12px;
+    }
+
+    .otp{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .otp input{
+      width:44px;
+      height:52px;
+      border-radius:12px;
+      border:0;
+      outline:none;
+      text-align:center;
+      font-size:20px;
+      font-weight:900;
+      background: rgba(255,255,255,.95);
+      color:#222;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,.06);
+    }
+    .otp input:focus{
+      box-shadow: 0 0 0 3px rgba(255,255,255,.45), inset 0 0 0 2px rgba(0,0,0,.06);
+      transform: translateY(-1px);
+    }
+
+    .btnRow{
+      display:flex;
+      justify-content:center;
+      margin-top:14px;
+    }
+    .btn{
+      border:0;
+      padding:10px 18px;
+      border-radius:999px;
+      background: rgba(255,255,255,.22);
+      color:#fff;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow: 0 12px 26px rgba(0,0,0,.18);
+      transition: transform .12s ease, filter .12s ease;
+    }
+    .btn:active{transform:scale(.98); filter:brightness(.98)}
+
+    .toast{
+      margin-top:10px;
+      text-align:center;
+      font-size:13px;
+      min-height:18px;
+      opacity:.95;
+    }
+    .ok{
+      font-size:16px;
+      font-weight:900;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <h1>กรอกรหัสผ่าน</h1>
+      <div class="sub">คำใบ้: วันนี้วันอะไร 😉</div>
+
+      <div class="otp" id="otp">
+        <input inputmode="numeric" maxlength="1" />
+        <input inputmode="numeric" maxlength="1" />
+        <input inputmode="numeric" maxlength="1" />
+        <input inputmode="numeric" maxlength="1" />
+        <input inputmode="numeric" maxlength="1" />
+        <input inputmode="numeric" maxlength="1" />
+      </div>
+
+      <div class="btnRow">
+        <button class="btn" id="confirm" type="button">ยืนยัน</button>
+      </div>
+
+      <div class="toast" id="toast"></div>
+    </div>
+  </div>
+
+  <script>
+    const PASS = "160469";
+    const NEXT = "game.html";
+
+    // กันข้ามหน้า (ถ้าอยากใช้)
+    // if(localStorage.getItem("door_done") !== "yes") location.href="door.html";
+
+    const otp = document.getElementById("otp");
+    const inputs = [...otp.querySelectorAll("input")];
+    const toast = document.getElementById("toast");
+    const confirmBtn = document.getElementById("confirm");
+
+    // โฟกัสช่องแรก
+    inputs[0].focus();
+
+    // ใส่เลขแล้วเด้งช่องถัดไป + รองรับ paste
+    inputs.forEach((inp, i) => {
+      inp.addEventListener("input", () => {
+        inp.value = (inp.value || "").replace(/\D/g,"").slice(0,1);
+        if(inp.value && i < inputs.length-1) inputs[i+1].focus();
+      });
+
+      inp.addEventListener("keydown", (e) => {
+        if(e.key === "Backspace" && !inp.value && i > 0){
+          inputs[i-1].focus();
+        }
+        if(e.key === "Enter") check();
+      });
+
+      inp.addEventListener("paste", (e)=>{
+        e.preventDefault();
+        const t = (e.clipboardData.getData("text") || "").replace(/\D/g,"").slice(0,6);
+        for(let k=0;k<inputs.length;k++){
+          inputs[k].value = t[k] || "";
+        }
+        const idx = Math.min(t.length, inputs.length-1);
+        inputs[idx].focus();
+      });
+    });
+
+    function getCode(){
+      return inputs.map(i=>i.value||"").join("");
+    }
+
+    function check(){
+      const code = getCode();
+      if(code.length < 6){
+        toast.textContent = "ใส่ให้ครบ 6 หลักก่อนน้า 🙂";
+        return;
+      }
+      if(code === PASS){
+        toast.innerHTML = '<span class="ok">มาเล่นเกมกันนนน 🎮💗</span>';
+        localStorage.setItem("pass_ok","yes");
+        setTimeout(()=>location.href = NEXT, 900);
+      }else{
+        toast.textContent = "รหัสไม่ถูกน้า ลองใหม่อีกที";
+        inputs.forEach(i=>i.value="");
+        inputs[0].focus();
+      }
+    }
+
+    confirmBtn.addEventListener("click", check);
+  </script>
+</body>
+</html>

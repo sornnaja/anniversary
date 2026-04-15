@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>การ์ดบอกรัก 💚💜</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .cardWrap{perspective:1200px;margin-top:20px}
+    .flip{
+      position:relative;width:min(720px,100%);min-height:420px;margin:0 auto;transform-style:preserve-3d;
+      transition:transform .8s ease
+    }
+    .flip.open{transform:rotateY(180deg)}
+    .face{
+      position:absolute;inset:0;backface-visibility:hidden;border-radius:28px;padding:24px;
+      background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.85);box-shadow:var(--shadow)
+    }
+    .front{display:grid;place-items:center;text-align:center}
+    .back{transform:rotateY(180deg)}
+    .big{font-size:48px}
+    .msg{white-space:pre-wrap;line-height:1.9;font-size:18px;margin-top:10px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:18px}
+    .btn{
+      border:0;padding:11px 14px;border-radius:14px;background:rgba(255,255,255,.75);
+      color:var(--text);font-weight:900;cursor:pointer;box-shadow:var(--shadow2);text-decoration:none
+    }
+    .primary{background:linear-gradient(135deg,var(--mint),var(--lav));color:#0b1220}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <div class="header">
+        <div>
+          <h1 class="title">การ์ดบอกรัก</h1>
+          <p class="subtitle">กดเปิดการ์ดได้เลย 💌</p>
+        </div>
+        <div class="badges"><div class="badge">💚</div><div class="badge">💜</div></div>
+      </div>
+
+      <div class="cardWrap">
+        <div class="flip" id="flip">
+          <div class="face front">
+            <div>
+              <div class="big">💌</div>
+              <h2>กดเปิดการ์ดของเรา</h2>
+              <p class="subtitle">มีข้อความบอกรักอยู่ข้างในนะ</p>
+            </div>
+          </div>
+          <div class="face back">
+            <h2 style="margin:0">ถึงคนเก่งของเค้า 💚💜</h2>
+            <div class="msg" id="cardMsg"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <button class="btn primary" id="open" type="button">เปิดการ์ด</button>
+        <a class="btn" href="index.html">กลับหน้าแรก</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const text = [
+      'ขอบคุณที่อยู่ตรงนี้ด้วยกัน',
+      'ขอบคุณที่ทำให้ทุกวันธรรมดากลายเป็นวันที่พิเศษ',
+      'ไม่ว่าจะผ่านไปกี่วัน เค้าก็ยังเลือกเธอเสมอ',
+      '',
+      'รักเธอมาก ๆ เลยนะ',
+      '— จากเค้า'
+    ].join('\n');
+    document.getElementById('cardMsg').textContent = text;
+    document.getElementById('open').addEventListener('click', ()=>{
+      document.getElementById('flip').classList.toggle('open');
+      localStorage.setItem('anniv_card_opened','yes');
+    });
+  </script>
+</body>
+</html>

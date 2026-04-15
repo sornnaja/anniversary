@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <link rel="stylesheet" href="theme.css">
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ระบายความในใจ 💚💜</title>
+  <style>
+   
+    textarea, input{
+  border: 1px solid rgba(255,255,255,.75);
+  box-shadow: none;
+}
+textarea:focus, input:focus{
+  outline: none;
+  box-shadow: none;
+  border-color: rgba(255,255,255,.75);
+}
+
+    textarea::placeholder{color:#00000080}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center}
+    button,a.btn{
+      appearance:none;
+      border:1px solid var(--line);
+      background:#ffffff14;
+      color:var(--text);
+      padding:11px 14px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:900;
+      text-decoration:none;
+      display:inline-flex; gap:8px; align-items:center;
+      transition:.18s transform,.18s background, .18s opacity;
+    }
+    button:hover,a.btn:hover{transform:translateY(-1px);background:#ffffff20}
+    .primary{
+      border:none;
+      background: linear-gradient(135deg, var(--mint), var(--lav));
+      color:#0b1220;
+    }
+    button:disabled{opacity:.55; cursor:not-allowed}
+    .toast{color:var(--muted); font-size:13px; min-height:18px}
+    .note{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+      border:1px dashed #00000055;
+      border-radius:18px;
+      padding:12px;
+      background:#00000022;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>ระบายความในใจได้เต็มที่ 💚💜</h1>
+      <p class="sub">
+        หน้านี้เป็นพื้นที่ให้เขียนความรู้สึก/ความในใจได้เลย<br>
+        <b>ข้อความจะไม่ถูกส่งไปเก็บในระบบ</b> (ไม่เผยแพร่สาธารณะ) เชิญพิมพ์ได้เต็มที่
+      </p>
+
+      <textarea
+  id="msg"
+  class="textBox"
+  placeholder="พิมพ์ได้เลย… อยากเล่าอะไร ระบายได้เต็มที่เลยนะ 💌"
+></textarea>
+      <div class="row">
+        <button id="send" type="button" class="primary">ส่งแล้วไปต่อ ➜</button>
+        <div id="status" class="toast"></div>
+        <a class="btn" href="index.html">กลับไปหน้าเกม</a>
+      </div>
+
+      <div class="note">
+        หมายเหตุ: ถ้าเน็ตมีปัญหา อาจส่งไม่สำเร็จ แต่เว็บจะพาไปหน้าถัดไปให้
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ✅ ใช้ URL จริงของคุณ (ต้องลงท้าย /exec)
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDohC6zPbHXXv6E-_kJJCAEij8ngY_f4hkJnFwScNl6AEqPibTQqUh9CCzvVliHJk0bQ/exec";
+    const NEXT_PAGE  = "q1.html";
+
+    const ta = document.getElementById("msg");
+    const sendBtn = document.getElementById("send");
+    const statusEl = document.getElementById("status");
+
+    function setStatus(t){ if(statusEl) statusEl.textContent = t; }
+
+    function timeoutFetch(ms){
+      const controller = new AbortController();
+      const id = setTimeout(()=>controller.abort(), ms);
+      return { signal: controller.signal, stop: ()=>clearTimeout(id) };
+    }
+
+    async function sendToSheet(text){
+      const payload = {
+        name: "Cream",
+        message: text,
+        page: "vent.html",
+        ts: Date.now()
+      };
+
+      const t = timeoutFetch(7000);
+      try{
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload),
+          signal: t.signal
+        });
+
+        // Apps Script บางทีตอบไม่ใช่ JSON ก็ถือว่า ok ถ้า status 200
+        let data = null;
+        try { data = await res.json(); } catch {}
+
+        if(res.ok && (!data || data.ok !== false)) return true;
+        return false;
+      } finally {
+        t.stop();
+      }
+    }
+
+    sendBtn.addEventListener("click", async ()=>{
+      const text = (ta.value || "").trim();
+      if(!text){
+        setStatus("พิมพ์ข้อความก่อนน้า 🙂");
+        ta.focus();
+        return;
+      }
+
+      sendBtn.disabled = true;
+      setStatus("กำลังส่งข้อความ...");
+
+      let ok = false;
+      try{
+        ok = await sendToSheet(text);
+      }catch(e){
+        ok = false;
+      }
+
+      if(ok){
+        setStatus("ส่งแล้ว ✓ กำลังไปหน้าถัดไป...");
+        setTimeout(()=>location.href = NEXT_PAGE, 350);
+      }else{
+        setStatus("ส่งไม่สำเร็จ (เช็กเน็ต/สิทธิ์ Deploy) แต่จะไปต่อให้นะ");
+        setTimeout(()=>location.href = NEXT_PAGE, 900);
+      }
+    });
+  </script>
+</body>
+</html>

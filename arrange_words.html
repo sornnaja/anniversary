@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>เรียงคำให้ถูก 💚💜</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .chips,.answer{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    .chip{
+      border:0;border-radius:16px;padding:12px 14px;background:linear-gradient(180deg,#ff77a7,#ff5c8a);
+      color:#fff;font-weight:900;cursor:pointer;box-shadow:0 10px 22px rgba(0,0,0,.12)
+    }
+    .answer{
+      min-height:74px;padding:14px;border-radius:20px;border:2px dashed rgba(0,0,0,.15);
+      background:rgba(255,255,255,.5);align-items:center
+    }
+    .ghost{opacity:.6}
+    .toast{margin-top:12px;color:var(--muted);font-size:14px;min-height:18px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .btn{
+      border:0;padding:11px 14px;border-radius:14px;background:rgba(255,255,255,.75);
+      color:var(--text);font-weight:900;cursor:pointer;box-shadow:var(--shadow2);text-decoration:none
+    }
+    .primary{background:linear-gradient(135deg,var(--mint),var(--lav));color:#0b1220}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <div class="header">
+        <div>
+          <h1 class="title">เรียงคำให้เป็นประโยค</h1>
+          <p class="subtitle">กดคำด้านล่างเพื่อเรียงเป็นประโยคน่ารัก ๆ ให้ถูกต้อง</p>
+        </div>
+        <div class="badges"><div class="badge">💌</div><div class="badge">💜</div></div>
+      </div>
+
+      <div class="answer" id="answer"></div>
+      <div class="chips" id="chips"></div>
+      <div class="toast" id="toast">ลองเรียงดูน้า</div>
+
+      <div class="row">
+        <button class="btn" id="reset" type="button">เริ่มใหม่</button>
+        <a class="btn primary" id="next" href="love_card.html" style="pointer-events:none;opacity:.45;">เปิดการ์ด ➜</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const solution = ['หนู','ดีใจ','ที่สุด','ที่' , 'มี' , 'เบบี๋' ,'ในชีวิต'];
+    const shuffled = ['เบบี๋','รู้มั้ย','อะไรบ้าง','ที่', 'หนู' , 'มี' ,'แล้ว' , 'ดีใจ' , 'ที่สุด' ,'ในชีวิต'];
+    const chips = document.getElementById('chips');
+    const answer = document.getElementById('answer');
+    const toast = document.getElementById('toast');
+    const next = document.getElementById('next');
+
+    function render(){
+      chips.innerHTML='';
+      answer.innerHTML='';
+      shuffled.forEach(word => addChip(word, chips));
+      lock(false);
+      toast.textContent = 'ลองเรียงดูน้า';
+    }
+
+    function addChip(word, parent){
+      const b = document.createElement('button');
+      b.className = 'chip';
+      b.textContent = word;
+      b.type = 'button';
+      b.addEventListener('click', ()=>{
+        if(parent === chips){
+          answer.appendChild(b);
+        }else{
+          chips.appendChild(b);
+        }
+        check();
+      });
+      parent.appendChild(b);
+    }
+
+    function current(){
+      return [...answer.querySelectorAll('.chip')].map(x=>x.textContent);
+    }
+
+    function lock(ok){
+      next.style.pointerEvents = ok ? 'auto' : 'none';
+      next.style.opacity = ok ? '1' : '.45';
+    }
+
+    function check(){
+      const now = current();
+      if(now.length === 0){ toast.textContent = 'ลองเรียงดูน้า'; return; }
+      if(now.join('|') === solution.join('|')){
+        toast.textContent = 'ถูกต้องงง 💚 พร้อมเปิดการ์ดแล้ว';
+        lock(true);
+        localStorage.setItem('anniv_words_done','yes');
+      }else if(solution.slice(0, now.length).join('|') === now.join('|')){
+        toast.textContent = 'ใกล้แล้ว อีกนิดเดียว ✨';
+        lock(false);
+      }else{
+        toast.textContent = 'ยังไม่ใช่น้า ลองสลับอีกที';
+        lock(false);
+      }
+    }
+
+    document.getElementById('reset').addEventListener('click', ()=>{
+      localStorage.removeItem('anniv_words_done');
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

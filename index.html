@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Knock Knock 💚💜</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+   .doorStage{
+  width:100%;
+  aspect-ratio: 16/9;
+  border-radius:20px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.65);
+  background: rgba(255,255,255,.35);
+  box-shadow: var(--shadow2);
+  position:relative;
+}
+.doorStage img{
+  width:100%; height:100%;
+  object-fit:cover;
+
+    }
+    .tapHint{
+      position:absolute;
+      left:12px; bottom:12px;
+      background: rgba(0,0,0,.38);
+      color:#fff;
+      padding:10px 12px;
+      border-radius:14px;
+      font-weight:900;
+      font-size:13px;
+      border:1px solid rgba(255,255,255,.25);
+      backdrop-filter: blur(6px);
+    }
+    .counter{
+      position:absolute;
+      right:12px; bottom:12px;
+      background: rgba(255,255,255,.62);
+      color:#222;
+      padding:10px 12px;
+      border-radius:14px;
+      font-weight:900;
+      font-size:13px;
+      border:1px solid rgba(255,255,255,.65);
+    }
+    .who{
+      margin-top:14px;
+      display:none;
+    }
+    .who.show{display:block;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <div class="header">
+        <div>
+          <h1 class="title">Knock knock 🚪</h1>
+          <p class="subtitle">เคาะหน้าจอ 3 ครั้งเพื่อเปิดประตู</p>
+        </div>
+        <div class="badges">
+          <div class="badge">💚</div><div class="badge">💜</div>
+        </div>
+      </div>
+
+      <div class="doorStage" id="stage" aria-label="door">
+        <img src="assets/door.png" alt="door">
+        <div class="tapHint" id="hint">เคาะเลย… knock knock 👊</div>
+        <div class="counter" id="cnt">0 / 3</div>
+      </div>
+
+      <div class="who" id="whoBox">
+        <h2 style="margin:14px 0 6px;font-size:18px">Who’s there? 👀</h2>
+        <div class="subtitle" style="margin:0">พิมพ์ชื่อเล่น </div>
+
+        <input id="name" placeholder="เช่น Cream / เบบี๋ / พี่หมี…" autocomplete="name" />
+        <div class="row">
+          <button class="btn primary" id="go" type="button">ไปต่อ ➜</button>
+          <div class="toast" id="toast"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TARGET = 3;
+    let knocks = 0;
+
+    const stage = document.getElementById("stage");
+    const cnt = document.getElementById("cnt");
+    const hint = document.getElementById("hint");
+    const whoBox = document.getElementById("whoBox");
+    const nameEl = document.getElementById("name");
+    const goBtn = document.getElementById("go");
+    const toast = document.getElementById("toast");
+
+    function update(){
+      cnt.textContent = `${knocks} / ${TARGET}`;
+      if(knocks >= TARGET){
+        hint.textContent = "Who’s there? 👀";
+        whoBox.classList.add("show");
+        nameEl.focus();
+      }
+    }
+
+    stage.addEventListener("pointerdown", (e)=>{
+      e.preventDefault();
+      if(knocks >= TARGET) return;
+      knocks++;
+      update();
+      // (ถ้าอยากมีเสียงเคาะ บอกได้ เดี๋ยวใส่ให้)
+    }, {passive:false});
+
+    goBtn.addEventListener("click", ()=>{
+      const n = (nameEl.value || "").trim();
+      if(!n){
+        toast.textContent = "ใส่ชื่อก่อนน้า 🙂";
+        nameEl.focus();
+        return;
+      }
+      localStorage.setItem("player_name", n);
+      localStorage.setItem("door_done", "yes");
+      location.href = "passcode.html";
+    });
+
+    update();
+  </script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tier List ของเธอ 💚💜</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .board{display:grid;gap:14px;margin-top:18px}
+    .tier{
+      display:grid;grid-template-columns:140px 1fr;gap:12px;align-items:stretch;
+      background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.8);
+      border-radius:22px;padding:10px;box-shadow:var(--shadow2)
+    }
+    .label{
+  border-radius:16px;
+  display:flex;              /* เปลี่ยนจาก grid */
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+
+  font-weight:900;
+  font-size:20px;            /* ลดนิดนึง */
+  line-height:1.3;
+
+  color:#222;
+  min-height:92px;
+  padding:10px;
+
+  word-break:keep-all;       /* กันตัดคำไทยแปลก ๆ */
+}
+    }
+    .s{background:#ff9fc1}.a{background:#ffd98c}.b{background:#fff2a1}.c{background:#c5f0cf}
+    .drop{
+      border:2px dashed rgba(0,0,0,.15);border-radius:18px;min-height:92px;padding:10px;
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:rgba(255,255,255,.45)
+    }
+    .pool{
+      margin-top:16px;padding:14px;border-radius:22px;background:rgba(255,255,255,.45);
+      border:1px solid rgba(255,255,255,.8)
+    }
+    .poolItems{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+    .item{
+      padding:12px 14px;border-radius:16px;border:1px solid rgba(255,255,255,.85);
+      background:linear-gradient(180deg,#ff77a7,#ff5c8a);color:#fff;font-weight:900;
+      box-shadow:0 10px 22px rgba(0,0,0,.12);cursor:grab;user-select:none
+    }
+    .item.dragging{opacity:.6}
+    .tip,.toast{margin-top:12px;color:var(--muted);font-size:14px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .btn{
+      border:0;padding:11px 14px;border-radius:14px;background:rgba(255,255,255,.75);
+      color:var(--text);font-weight:900;cursor:pointer;box-shadow:var(--shadow2);text-decoration:none
+    }
+    .primary{background:linear-gradient(135deg,var(--mint),var(--lav));color:#0b1220}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <div class="header">
+        <div>
+          <h1 class="title">จัด Tier List กัน 💚💜</h1>
+          <p class="subtitle">จัด Tierlist พฤติกรรมแฟน </p>
+        </div>
+        <div class="badges"><div class="badge">💍</div><div class="badge">✨</div></div>
+      </div>
+
+      <div class="board">
+        <div class="tier"><div class="label s">ชิบหาย</div><div class="drop" data-tier="S"></div></div>
+        <div class="tier"><div class="label a">เป็นไปไม่ได้</div><div class="drop" data-tier="A"></div></div>
+        <div class="tier"><div class="label b">ธรรมดาคับ</div><div class="drop" data-tier="B"></div></div>
+        <div class="tier"><div class="label c">ตาสว่าง</div><div class="drop" data-tier="C"></div></div>
+      </div>
+
+      <div class="pool">
+        <b>รายการให้จัด</b>
+        <div class="poolItems" id="poolItems">
+          <div class="item" draggable="true">แต่งหน้านาน</div>
+          <div class="item" draggable="true">ถามว่ามีอะไรจะบอกเค้าไหม</div>
+          <div class="item" draggable="true">งอนแล้วแตะตัวไม่ได้</div>
+          <div class="item" draggable="true">ถามว่ากินอะไรแล้วตอบอะไรก็ได้</div>
+          <div class="item" draggable="true">ใช้ทุกอย่างตอนจะนั่ง</div>
+          <div class="item" draggable="true">ฝันว่าเรานอกใจ</div>
+          <div class="item" draggable="true">ทำผิดแล้วขอโทษ</div>
+          <div class="item" draggable="true">พูดว่าไม่เป็นไร</div>
+          <div class="item" draggable="true">ลงเพลงเศร้า</div>
+          <div class="item" draggable="true">พูดว่าไปอาบน้ำได้แล้ว</div>
+      </div>
+
+      <div class="tip">จะจัดจริงจังหรือแกล้งแหย่กันก็ได้ 😆</div>
+      <div class="toast" id="toast">ลากของทั้งหมดไปวางให้ครบก่อนน้า</div>
+
+      <div class="row">
+        <button class="btn" id="reset" type="button">เริ่มจัดใหม่</button>
+        <a class="btn primary" id="next" href="arrange_words.html" style="pointer-events:none;opacity:.45;">ไปต่อ ➜</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const drops = [...document.querySelectorAll('.drop')];
+    const pool = document.getElementById('poolItems');
+    const toast = document.getElementById('toast');
+    const next = document.getElementById('next');
+    let dragging = null;
+
+    function allPlaced(){
+      return document.querySelectorAll('.poolItems .item').length === 0;
+    }
+
+    function updateState(){
+      if(allPlaced()){
+        toast.textContent = 'จัดครบแล้วว ไปต่อได้เลย ✨';
+        next.style.pointerEvents = 'auto';
+        next.style.opacity = '1';
+        localStorage.setItem('anniv_tier_done','yes');
+      }else{
+        toast.textContent = 'ลากของทั้งหมดไปวางให้ครบก่อนน้า';
+        next.style.pointerEvents = 'none';
+        next.style.opacity = '.45';
+      }
+    }
+
+    function bindItem(el){
+      el.addEventListener('dragstart', ()=>{ dragging = el; el.classList.add('dragging'); });
+      el.addEventListener('dragend', ()=>{ el.classList.remove('dragging'); dragging = null; });
+      el.addEventListener('click', ()=>{
+        const target = drops.find(d => d.children.length < 3) || drops[0];
+        target.appendChild(el);
+        updateState();
+      });
+    }
+
+    [...document.querySelectorAll('.item')].forEach(bindItem);
+
+    [pool, ...drops].forEach(zone => {
+      zone.addEventListener('dragover', e => e.preventDefault());
+      zone.addEventListener('drop', e => {
+        e.preventDefault();
+        if(!dragging) return;
+        zone.appendChild(dragging);
+        updateState();
+      });
+    });
+
+    document.getElementById('reset').addEventListener('click', ()=>{
+      const items = [...document.querySelectorAll('.item')];
+      items.forEach(i => pool.appendChild(i));
+      localStorage.removeItem('anniv_tier_done');
+      updateState();
+    });
+
+    next.addEventListener('click', (e)=>{
+      if(!allPlaced()) e.preventDefault();
+    });
+
+    updateState();
+  </script>
+</body>
+</html>

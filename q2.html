@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <link rel="stylesheet" href="theme.css">
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>คำถาม 2 💚💜</title>
+  <style>
+    
+    .wrap{max-width:980px;margin:0 auto;padding:34px 18px 24px}
+    .card{
+      border:1px solid var(--line); background:var(--card);
+      border-radius:22px; padding:16px;
+      backdrop-filter: blur(12px);
+      box-shadow:0 18px 60px #00000033;
+    }
+    h1{margin:0;font-size:clamp(28px,4.2vw,44px)}
+    .sub{color:var(--muted);line-height:1.7;margin:8px 0 0}
+    .choices{display:grid;gap:10px;margin-top:14px;grid-template-columns:1fr 1fr}
+    @media (max-width: 560px){ .choices{grid-template-columns:1fr;} }
+    button{
+      border:1px solid var(--line);
+      background:#ffffff14;
+      color:var(--text);
+      padding:14px 14px;
+      border-radius:18px;
+      cursor:pointer;
+      font-weight:900;
+      transition:.18s transform,.18s background;
+      text-align:left;
+    }
+    button:hover{transform:translateY(-1px);background:#ffffff20}
+    .msg{margin-top:12px;color:var(--muted);min-height:18px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <div class="header">
+        <div>
+          <h1 class="title">คำถามข้อ 2</h1>
+          <p class="subtitle">วันเกิดใครน้าาา 🎂</p>
+        </div>
+        <div class="badges">
+          <div class="badge">💚</div><div class="badge">💜</div>
+        </div>
+      </div>
+
+      <!-- ✅ ตัวเลือกแบบในรูป -->
+      <div class="choiceGrid" id="choices">
+        <button class="choiceCard" type="button" data-go="q3.html">
+          <div class="choiceIcon">🐻</div>
+          <div class="choiceText">พี่หมี</div>
+        </button>
+
+        <button class="choiceCard" type="button" data-go="q3.html">
+          <div class="choiceIcon">🐷</div>
+          <div class="choiceText">อ้วง</div>
+        </button>
+
+        <button class="choiceCard" type="button" data-go="q3.html">
+          <div class="choiceIcon">🍼</div>
+          <div class="choiceText">เบบี๋</div>
+        </button>
+
+        <button class="choiceCard" type="button" data-go="q3.html">
+          <div class="choiceIcon">🍦</div>
+          <div class="choiceText">ครีม</div>
+        </button>
+      </div>
+
+      <div class="toast" id="msg" style="margin-top:12px;"></div>
+    </div>
+  </div>
+
+  <script>
+    const msg = document.getElementById("msg");
+    const box = document.getElementById("choices");
+
+    box.addEventListener("click", (e) => {
+      const b = e.target.closest("button");
+      if(!b) return;
+
+      msg.textContent = "ถูกหมดเลยยย ไปต่อ! ✨";
+      const go = b.dataset.go || "q3.html";
+      setTimeout(() => location.href = go, 450);
+    });
+  </script>
+</body>
+
+  </script>
+</body>
+</html>
