@@ -6,53 +6,141 @@
   <title>Tier List ของเธอ 💚💜</title>
   <link rel="stylesheet" href="theme.css">
   <style>
-    .board{display:grid;gap:14px;margin-top:18px}
+    .board{
+      display:grid;
+      gap:14px;
+      margin-top:18px;
+    }
+
     .tier{
-      display:grid;grid-template-columns:140px 1fr;gap:12px;align-items:stretch;
-      background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.8);
-      border-radius:22px;padding:10px;box-shadow:var(--shadow2)
+      display:grid;
+      grid-template-columns:140px 1fr;
+      gap:12px;
+      align-items:stretch;
+      background:rgba(255,255,255,.5);
+      border:1px solid rgba(255,255,255,.8);
+      border-radius:22px;
+      padding:10px;
+      box-shadow:var(--shadow2);
     }
+
     .label{
-  border-radius:16px;
-  display:flex;              /* เปลี่ยนจาก grid */
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-
-  font-weight:900;
-  font-size:20px;            /* ลดนิดนึง */
-  line-height:1.3;
-
-  color:#222;
-  min-height:92px;
-  padding:10px;
-
-  word-break:keep-all;       /* กันตัดคำไทยแปลก ๆ */
-}
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      font-weight:900;
+      font-size:20px;
+      line-height:1.3;
+      color:#222;
+      min-height:92px;
+      padding:10px;
+      word-break:keep-all;
     }
-    .s{background:#ff9fc1}.a{background:#ffd98c}.b{background:#fff2a1}.c{background:#c5f0cf}
+
+    .s{background:#ff9fc1}
+    .a{background:#ffd98c}
+    .b{background:#fff2a1}
+    .c{background:#c5f0cf}
+
     .drop{
-      border:2px dashed rgba(0,0,0,.15);border-radius:18px;min-height:92px;padding:10px;
-      display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:rgba(255,255,255,.45)
+      border:2px dashed rgba(0,0,0,.15);
+      border-radius:18px;
+      min-height:92px;
+      padding:10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      background:rgba(255,255,255,.45);
     }
+
     .pool{
-      margin-top:16px;padding:14px;border-radius:22px;background:rgba(255,255,255,.45);
-      border:1px solid rgba(255,255,255,.8)
+      margin-top:16px;
+      padding:14px;
+      border-radius:22px;
+      background:rgba(255,255,255,.45);
+      border:1px solid rgba(255,255,255,.8);
     }
-    .poolItems{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+
+    .poolItems{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+    }
+
     .item{
-      padding:12px 14px;border-radius:16px;border:1px solid rgba(255,255,255,.85);
-      background:linear-gradient(180deg,#ff77a7,#ff5c8a);color:#fff;font-weight:900;
-      box-shadow:0 10px 22px rgba(0,0,0,.12);cursor:grab;user-select:none
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.85);
+      background:linear-gradient(180deg,#ff77a7,#ff5c8a);
+      color:#fff;
+      font-weight:900;
+      box-shadow:0 10px 22px rgba(0,0,0,.12);
+      cursor:grab;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
     }
+
     .item.dragging{opacity:.6}
-    .tip,.toast{margin-top:12px;color:var(--muted);font-size:14px}
-    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-    .btn{
-      border:0;padding:11px 14px;border-radius:14px;background:rgba(255,255,255,.75);
-      color:var(--text);font-weight:900;cursor:pointer;box-shadow:var(--shadow2);text-decoration:none
+
+    .item.selected{
+      outline:3px solid rgba(124,255,178,.9);
+      transform:translateY(-1px);
     }
-    .primary{background:linear-gradient(135deg,var(--mint),var(--lav));color:#0b1220}
+
+    .tip,.toast{
+      margin-top:12px;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+
+    .btn{
+      border:0;
+      padding:11px 14px;
+      border-radius:14px;
+      background:rgba(255,255,255,.75);
+      color:var(--text);
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:var(--shadow2);
+      text-decoration:none;
+    }
+
+    .primary{
+      background:linear-gradient(135deg,var(--mint),var(--lav));
+      color:#0b1220;
+    }
+
+    .disabled{
+      pointer-events:none;
+      opacity:.45;
+    }
+
+    @media (max-width: 640px){
+      .tier{
+        grid-template-columns:110px 1fr;
+      }
+
+      .label{
+        font-size:16px;
+        min-height:84px;
+      }
+
+      .item{
+        width:100%;
+        text-align:center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -61,16 +149,31 @@
       <div class="header">
         <div>
           <h1 class="title">จัด Tier List กัน 💚💜</h1>
-          <p class="subtitle">จัด Tierlist พฤติกรรมแฟน </p>
+          <p class="subtitle">จัด Tierlist พฤติกรรมแฟน</p>
         </div>
-        <div class="badges"><div class="badge">💍</div><div class="badge">✨</div></div>
+        <div class="badges">
+          <div class="badge">💍</div>
+          <div class="badge">✨</div>
+        </div>
       </div>
 
       <div class="board">
-        <div class="tier"><div class="label s">ชิบหาย</div><div class="drop" data-tier="S"></div></div>
-        <div class="tier"><div class="label a">เป็นไปไม่ได้</div><div class="drop" data-tier="A"></div></div>
-        <div class="tier"><div class="label b">ธรรมดาคับ</div><div class="drop" data-tier="B"></div></div>
-        <div class="tier"><div class="label c">ตาสว่าง</div><div class="drop" data-tier="C"></div></div>
+        <div class="tier">
+          <div class="label s">ชิบหาย</div>
+          <div class="drop" data-tier="S"></div>
+        </div>
+        <div class="tier">
+          <div class="label a">เป็นไปไม่ได้</div>
+          <div class="drop" data-tier="A"></div>
+        </div>
+        <div class="tier">
+          <div class="label b">ธรรมดาคับ</div>
+          <div class="drop" data-tier="B"></div>
+        </div>
+        <div class="tier">
+          <div class="label c">ตาสว่าง</div>
+          <div class="drop" data-tier="C"></div>
+        </div>
       </div>
 
       <div class="pool">
@@ -86,14 +189,15 @@
           <div class="item" draggable="true">พูดว่าไม่เป็นไร</div>
           <div class="item" draggable="true">ลงเพลงเศร้า</div>
           <div class="item" draggable="true">พูดว่าไปอาบน้ำได้แล้ว</div>
+        </div>
       </div>
 
-      <div class="tip">จะจัดจริงจังหรือแกล้งแหย่กันก็ได้ 😆</div>
-      <div class="toast" id="toast">ลากของทั้งหมดไปวางให้ครบก่อนน้า</div>
+      <div class="tip">คอม: ลากได้ | มือถือ: แตะชิ้นก่อน แล้วแตะช่องที่อยากวาง 💚</div>
+      <div class="toast" id="toast">ลากหรือแตะของทั้งหมดไปวางให้ครบก่อนน้า</div>
 
       <div class="row">
         <button class="btn" id="reset" type="button">เริ่มจัดใหม่</button>
-        <a class="btn primary" id="next" href="arrange_words.html" style="pointer-events:none;opacity:.45;">ไปต่อ ➜</a>
+        <a class="btn primary disabled" id="next" href="arrange_words.html">ไปต่อ ➜</a>
       </div>
     </div>
   </div>
@@ -104,6 +208,7 @@
     const toast = document.getElementById('toast');
     const next = document.getElementById('next');
     let dragging = null;
+    let selectedItem = null;
 
     function allPlaced(){
       return document.querySelectorAll('.poolItems .item').length === 0;
@@ -112,23 +217,52 @@
     function updateState(){
       if(allPlaced()){
         toast.textContent = 'จัดครบแล้วว ไปต่อได้เลย ✨';
-        next.style.pointerEvents = 'auto';
-        next.style.opacity = '1';
+        next.classList.remove('disabled');
         localStorage.setItem('anniv_tier_done','yes');
       }else{
-        toast.textContent = 'ลากของทั้งหมดไปวางให้ครบก่อนน้า';
-        next.style.pointerEvents = 'none';
-        next.style.opacity = '.45';
+        toast.textContent = 'ลากหรือแตะของทั้งหมดไปวางให้ครบก่อนน้า';
+        next.classList.add('disabled');
       }
     }
 
+    function clearSelected(){
+      document.querySelectorAll('.item.selected').forEach(el => el.classList.remove('selected'));
+      selectedItem = null;
+    }
+
+    function moveItemToZone(item, zone){
+      if(!item || !zone) return;
+      zone.appendChild(item);
+      item.classList.remove('selected');
+      selectedItem = null;
+      updateState();
+    }
+
     function bindItem(el){
-      el.addEventListener('dragstart', ()=>{ dragging = el; el.classList.add('dragging'); });
-      el.addEventListener('dragend', ()=>{ el.classList.remove('dragging'); dragging = null; });
-      el.addEventListener('click', ()=>{
-        const target = drops.find(d => d.children.length < 3) || drops[0];
-        target.appendChild(el);
-        updateState();
+      // สำหรับคอม
+      el.addEventListener('dragstart', () => {
+        dragging = el;
+        el.classList.add('dragging');
+      });
+
+      el.addEventListener('dragend', () => {
+        el.classList.remove('dragging');
+        dragging = null;
+      });
+
+      // สำหรับมือถือ/แท็บเล็ต
+      el.addEventListener('click', () => {
+        if(selectedItem === el){
+          el.classList.remove('selected');
+          selectedItem = null;
+          toast.textContent = 'ยกเลิกการเลือกแล้ว';
+          return;
+        }
+
+        clearSelected();
+        selectedItem = el;
+        el.classList.add('selected');
+        toast.textContent = 'เลือกชิ้นแล้ว แตะช่อง tier ที่อยากวางได้เลย 💚';
       });
     }
 
@@ -136,6 +270,7 @@
 
     [pool, ...drops].forEach(zone => {
       zone.addEventListener('dragover', e => e.preventDefault());
+
       zone.addEventListener('drop', e => {
         e.preventDefault();
         if(!dragging) return;
@@ -144,15 +279,41 @@
       });
     });
 
-    document.getElementById('reset').addEventListener('click', ()=>{
-      const items = [...document.querySelectorAll('.item')];
-      items.forEach(i => pool.appendChild(i));
-      localStorage.removeItem('anniv_tier_done');
-      updateState();
+    drops.forEach(zone => {
+      zone.addEventListener('click', () => {
+        if(selectedItem){
+          moveItemToZone(selectedItem, zone);
+        }
+      });
     });
 
-    next.addEventListener('click', (e)=>{
-      if(!allPlaced()) e.preventDefault();
+    pool.addEventListener('click', () => {
+      if(selectedItem && selectedItem.parentElement !== pool){
+        pool.appendChild(selectedItem);
+        selectedItem.classList.remove('selected');
+        selectedItem = null;
+        updateState();
+        toast.textContent = 'ย้ายกลับไปรายการด้านล่างแล้ว';
+      }
+    });
+
+    document.getElementById('reset').addEventListener('click', () => {
+      const items = [...document.querySelectorAll('.item')];
+      items.forEach(i => {
+        i.classList.remove('selected');
+        pool.appendChild(i);
+      });
+      dragging = null;
+      selectedItem = null;
+      localStorage.removeItem('anniv_tier_done');
+      updateState();
+      toast.textContent = 'เริ่มจัดใหม่แล้ว ลองจัดอีกครั้งได้เลย 😆';
+    });
+
+    next.addEventListener('click', (e) => {
+      if(!allPlaced()){
+        e.preventDefault();
+      }
     });
 
     updateState();
